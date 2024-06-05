@@ -3,41 +3,45 @@ let tasks = [
   { id: 2, title: "Tarea 2", completed: true },
 ];
 
+// Ver todas las tarea
 const getAllTasks = (req, res) => {
-  res.render("index", { title: "Mi primer lista de TAREAS", tasks });
+  res.json({ tasks });
 };
 
-const getAddTaskForm = (req, res) => {
-  res.render("add", { title: "Agregar TAREAS" });
-};
-
+// Agregar tarea
 const addTask = (req, res) => {
   let { title } = req.body;
-  let id = tasks.length + 1;
-  tasks.push({ id, title, completed: false });
-  res.redirect("/");
-};
 
-const getEditTasksForm = (req, res) => {
-  let id = parseInt(req.params.id);
-  let task = tasks.find((task) => task.id === id);
-
-  if (!task) {
-    res.redirect("/");
+  if (!title) {
+    res.status(404).json({ err: true, message: "Falta el TITULO de la tarea" });
   } else {
-    res.render("edit", { title: "Editar tarea", task });
+    let id = tasks.length + 1;
+    tasks.push({ id, title, completed: false });
+    res.json({ err: false, message: "Tarea agregada" });
   }
 };
 
+// Editar tarea
 const editTask = (req, res) => {
   let id = parseInt(req.params.id);
   let taskIndex = tasks.findIndex((task) => task.id === id);
 
   if (taskIndex === -1) {
-    res.redirect("/");
+    res.status(404).json({ err: true, message: "Tarea no encontrada" });
   } else {
     tasks[taskIndex].title = req.body.title;
-    res.redirect("/");
+    res.json({ err: false, message: "Tarea EDITADA" });
+  }
+};
+
+const getTask = (req, res) => {
+  let id = parseInt(req.params.id);
+  let taskIndex = tasks.findIndex((task) => task.id === id);
+
+  if (taskIndex === -1) {
+    res.status(404).json({ err: true, message: "Tarea no encontrada" });
+  } else {
+    res.json({ task: tasks[taskIndex] });
   }
 };
 
@@ -47,8 +51,10 @@ const completeTask = (req, res) => {
 
   if (task) {
     task.completed = true;
+    res.json({ err: false, message: "Tarea COMPLETADA" });
+  } else {
+    res.status(404).json({ err: true, message: "Tarea no encontrada" });
   }
-  res.redirect("/");
 };
 
 const uncompleteTask = (req, res) => {
@@ -57,23 +63,29 @@ const uncompleteTask = (req, res) => {
 
   if (task) {
     task.completed = false;
+    res.json({ err: false, message: "Tarea NO COMPLETADA" });
+  } else {
+    res.status(404).json({ err: true, message: "Tarea no encontrada" });
   }
-  res.redirect("/");
 };
 
 const deleteTask = (req, res) => {
   let id = parseInt(req.params.id);
- tasks = tasks.filter((task) => task.id !== id);
- 
- res.redirect("/");
+  let taskIndex = tasks.findIndex((task) => task.id === id);
+
+  if (taskIndex === -1) {
+    res.status(404).json({ err: true, message: "Tarea no encontrada" });
+  } else {
+    tasks.splice(taskIndex, 1);
+    res.json({ err: false, message: "Tarea eliminada" });
+  }
 };
 
 export default {
   getAllTasks,
-  getAddTaskForm,
   addTask,
-  getEditTasksForm,
   editTask,
+  getTask,
   completeTask,
   uncompleteTask,
   deleteTask,

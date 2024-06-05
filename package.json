@@ -1,5 +1,5 @@
 {
-  "name": "express-mvc",
+  "name": "express-api",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -14,7 +14,6 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
-    "morgan": "^1.10.0",
-    "pug": "^3.0.3"
+    "morgan": "^1.10.0"
   }
 }
